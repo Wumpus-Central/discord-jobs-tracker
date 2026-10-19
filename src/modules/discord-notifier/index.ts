@@ -4,7 +4,7 @@ import { logger } from "#src/logger.js";
 import type { StepHandler } from "#src/pipeline.js";
 import { executeWebhook } from "#src/modules/discord/index.js";
 import { isJobDiffs } from "#src/modules/diff-jobs/index.js";
-import { createAddedJobEmbed, createRemovedJobEmbed } from "./format.js";
+import { createAddedJobEmbed, createEditedJobEmbed, createRemovedJobEmbed } from "./format.js";
 
 const MAX_EMBEDS_PER_MESSAGE = 10;
 const MESSAGE_DELAY_MS = 500;
@@ -21,6 +21,7 @@ export const discordNotifier: StepHandler = async (ctx) => {
   const embeds = [
     ...jobDiffs.added.map(createAddedJobEmbed),
     ...jobDiffs.removed.map(createRemovedJobEmbed),
+    ...jobDiffs.edited.map(createEditedJobEmbed),
   ];
 
   if (embeds.length === 0) {
@@ -39,7 +40,12 @@ export const discordNotifier: StepHandler = async (ctx) => {
   }
 
   log.info(
-    { added: jobDiffs.added.length, removed: jobDiffs.removed.length, messages: chunks.length },
+    {
+      added: jobDiffs.added.length,
+      removed: jobDiffs.removed.length,
+      edited: jobDiffs.edited.length,
+      messages: chunks.length,
+    },
     "Job notifications sent",
   );
 

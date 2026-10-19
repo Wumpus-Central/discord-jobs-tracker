@@ -2,12 +2,12 @@ import { logger } from "#src/logger.js";
 import type { StepHandler } from "#src/pipeline.js";
 import { isTrackerState } from "#src/modules/build-state/index.js";
 import type { TrackerState } from "#src/modules/build-state/index.js";
-import { findAddedJobs, findRemovedJobs, type JobDiffs } from "./diff.js";
+import { findAddedJobs, findEditedJobs, findRemovedJobs, type JobDiffs } from "./diff.js";
 
 const log = logger.child({ module: "diff-jobs" });
 
 export { isJobDiffs } from "./diff.js";
-export type { AddedJob, JobDiffs, RemovedJob } from "./diff.js";
+export type { AddedJob, EditedJob, FieldChange, JobDiffs, RemovedJob } from "./diff.js";
 
 export const diffJobs: StepHandler = async (ctx) => {
   const newStateValue = ctx.state["newState"];
@@ -30,10 +30,15 @@ export const diffJobs: StepHandler = async (ctx) => {
   const jobDiffs: JobDiffs = {
     added: findAddedJobs(oldState, newStateValue),
     removed: findRemovedJobs(oldState, newStateValue),
+    edited: findEditedJobs(oldState, newStateValue),
   };
 
   log.info(
-    { added: jobDiffs.added.length, removed: jobDiffs.removed.length },
+    {
+      added: jobDiffs.added.length,
+      removed: jobDiffs.removed.length,
+      edited: jobDiffs.edited.length,
+    },
     oldState === null ? "Bootstrap diff completed" : "Job diff completed",
   );
 
