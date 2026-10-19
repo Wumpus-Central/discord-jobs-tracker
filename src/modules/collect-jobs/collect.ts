@@ -39,7 +39,7 @@ export async function collectBoards(
   const results = await Promise.all(
     boards.map(async (board): Promise<BoardFetchResult> => {
       const startedAt = Date.now();
-      const result = await client.getJobs(board.token, { content: true });
+      const result = await client.getJobs(board.token);
       const tookMs = Date.now() - startedAt;
 
       if (!result.success) {

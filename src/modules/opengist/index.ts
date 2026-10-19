@@ -12,7 +12,14 @@ function getGistId(): string {
   return gistId;
 }
 
-export async function readGist<T>(filename: string): Promise<T> {
+export interface GistFileContent {
+  readonly content: string;
+  readonly size: number;
+  readonly truncated: boolean;
+}
+
+/** Reads a raw gist file without parsing it. Returns `null` when the file does not exist. */
+export async function readGistFile(filename: string): Promise<GistFileContent | null> {
   const gistId = getGistId();
 
   log.info({ filename }, "Reading file from Opengist");
@@ -21,13 +28,16 @@ export async function readGist<T>(filename: string): Promise<T> {
   const file = gist.files[filename];
 
   if (!file) {
-    throw new Error(`${filename} not found in gist`);
+    log.warn({ filename }, "File not found in Opengist");
+    return null;
   }
 
-  const value = JSON.parse(file.content) as T;
-
-  log.info({ filename }, "File read successfully");
-  return value;
+  log.info({ filename, size: file.size, truncated: file.truncated }, "File read successfully");
+  return {
+    content: file.content,
+    size: file.size,
+    truncated: file.truncated,
+  };
 }
 
 export async function saveGist(filename: string, value: unknown): Promise<void> {
