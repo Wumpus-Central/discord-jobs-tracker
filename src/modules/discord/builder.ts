@@ -34,6 +34,11 @@ export class EmbedBuilder {
     return this;
   }
 
+  footer(text: string): this {
+    this.embed.footer = { text };
+    return this;
+  }
+
   build(): Embed {
     return this.embed;
   }

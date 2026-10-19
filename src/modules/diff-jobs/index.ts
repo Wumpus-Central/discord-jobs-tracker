@@ -6,6 +6,7 @@ import { findAddedJobs, findRemovedJobs, type JobDiffs } from "./diff.js";
 
 const log = logger.child({ module: "diff-jobs" });
 
+export { isJobDiffs } from "./diff.js";
 export type { AddedJob, JobDiffs, RemovedJob } from "./diff.js";
 
 export const diffJobs: StepHandler = async (ctx) => {

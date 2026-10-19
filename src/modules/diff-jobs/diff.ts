@@ -21,6 +21,19 @@ const boardConfigByToken = new Map<string, BoardConfig>(
   DISCORD_BOARDS.map((board) => [board.token, board]),
 );
 
+export function isJobDiffs(value: unknown): value is JobDiffs {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return (
+    Array.isArray(value["added"]) &&
+    value["added"].every(isJobChangeEntry) &&
+    Array.isArray(value["removed"]) &&
+    value["removed"].every(isJobChangeEntry)
+  );
+}
+
 export function findAddedJobs(
   oldState: TrackerState | null,
   newState: TrackerState,
@@ -79,6 +92,26 @@ export function findRemovedJobs(
   return removed;
 }
 
+function isJobChangeEntry(value: unknown): value is AddedJob | RemovedJob {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  const board = value["board"];
+  const job = value["job"];
+
+  return (
+    isRecord(board) &&
+    typeof board["token"] === "string" &&
+    typeof board["label"] === "string" &&
+    isRecord(job)
+  );
+}
+
 function resolveBoard(token: string): BoardConfig {
   return boardConfigByToken.get(token) ?? { token, label: token };
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
