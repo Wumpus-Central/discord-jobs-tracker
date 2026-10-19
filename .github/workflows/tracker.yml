@@ -1,0 +1,37 @@
+name: Tracker
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "15,45 * * * *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: discord-jobs-tracker
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 26
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm start
+        env:
+          LOG_LEVEL: info
+          OPENGIST_URL: ${{ secrets.OPENGIST_URL }}
+          OPENGIST_TOKEN: ${{ secrets.OPENGIST_TOKEN }}
+          OPENGIST_GIST_ID: ${{ secrets.OPENGIST_GIST_ID }}
+          WEBHOOK_DISCORD: ${{ secrets.WEBHOOK_DISCORD }}
