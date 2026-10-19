@@ -3,6 +3,7 @@ import type { StepHandler } from "#src/pipeline.js";
 import { DISCORD_BOARDS } from "./boards.js";
 import { collectBoards } from "./collect.js";
 
+export { DISCORD_BOARDS } from "./boards.js";
 export type { BoardConfig } from "./boards.js";
 export type { BoardFetchFailure, BoardFetchResult, BoardFetchSuccess } from "./collect.js";
 

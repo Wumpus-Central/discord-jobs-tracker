@@ -9,6 +9,7 @@ import {
 
 const log = logger.child({ module: "build-state" });
 
+export { isTrackerState } from "./state.js";
 export type { BoardSnapshot, StoredJob, TrackerState } from "./state.js";
 
 export const buildState: StepHandler = async (ctx) => {
